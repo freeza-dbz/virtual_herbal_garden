@@ -226,9 +226,10 @@ const logoutUser = asyncHandler(async (req, res) => {
 //Change Password
 const changePassword = asyncHandler(async (req, res) => {
 
+
     const { oldPassword, newPassword } = req.body
 
-    const user = User.findById(user._id)
+    const user = User.findById(user?._id)
 
     if (!user) {
         throw new ApiError(404, "User not found")
@@ -251,11 +252,49 @@ const changePassword = asyncHandler(async (req, res) => {
 
 })
 
+//Update details
+const updateDetails = asyncHandler(async (req, res) => {
+
+    const { fullName, email, username } = req.body
+
+    if (!fullName || !email || !username) {
+        throw new ApiError(400, "All fields are required")
+    }
+
+    const user = await User.findByIdAndUpdate(req.user._id, {
+        $set: {
+            fullName,
+            email,
+            username
+        }
+    },{
+        new: true
+    }
+    )
+    .select("-password -refreshToken")
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                user,
+                "Details Updated Successfully"
+            )
+        )
+
+})
+
+
+
+
 
 export {
     registerUser,
     loginUser,
     refreshAccessToken,
     logoutUser,
-
+    changePassword,
+    updateDetails,
+    
 }
