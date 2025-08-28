@@ -27,11 +27,15 @@ app.use(helmet());
 
 import userRouter from "./routes/user.routes.js";
 
+import herbRouter from "./routes/herb.routes.js";
+
 
 
 // routes declaration
 
 app.use("/api/v1/users", userRouter);
+
+app.use("/api/v1/herbs", herbRouter);
 
 
 

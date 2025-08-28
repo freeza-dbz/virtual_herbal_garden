@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { version } from "mongoose";
 import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema({
@@ -35,13 +35,15 @@ const userSchema = new mongoose.Schema({
   },
 }, {
   timestamps: true
+}, {
+  versionKey: false
 })
 
-userSchema.pre("save", async function(next){
-  if(this.isModified("password")) {
-    this.password = await bcrypt.hash(this.password, 10);  
+userSchema.pre("save", async function (next) {
+  if (this.isModified("password")) {
+    this.password = await bcrypt.hash(this.password, 10);
     next()
-  }else{
+  } else {
     next()
   }
 })
@@ -56,25 +58,27 @@ userSchema.methods.generateAccessToken = function () {
   return jwt.sign({
     _id: this._id,
     email: this.email,
-    username : this.username,
+    username: this.username,
     fullname: this.fullName
   },
-  process.env.ACCESS_TOKEN_SECRET,
-  {
-    expiresIn: process.env.ACCESS_TOKEN_EXPIRY
-  }
-)}
+    process.env.ACCESS_TOKEN_SECRET,
+    {
+      expiresIn: process.env.ACCESS_TOKEN_EXPIRY
+    }
+  )
+}
 
 
 userSchema.methods.generateRefreshToken = function () {
   return jwt.sign({
     _id: this._id
   },
-  process.env.REFRESH_TOKEN_SECRET,
-  {
-    expiresIn: process.env.REFRESH_TOKEN_EXPIRY
-  }
-)}
+    process.env.REFRESH_TOKEN_SECRET,
+    {
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRY
+    }
+  )
+}
 
 
 
