@@ -190,7 +190,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
 })
 
-//Logging Out
+//Logging Out : Auth required
 const logoutUser = asyncHandler(async (req, res) => {
 
     //getting info of user using req.user because of auth middleware
@@ -267,11 +267,11 @@ const updateDetails = asyncHandler(async (req, res) => {
             email,
             username
         }
-    },{
+    }, {
         new: true
     }
     )
-    .select("-password -refreshToken")
+        .select("-password -refreshToken")
 
     return res
         .status(200)
@@ -285,7 +285,65 @@ const updateDetails = asyncHandler(async (req, res) => {
 
 })
 
+//Update Cover image : Auth required
+const updateCoverImage = asyncHandler(async (req, res) => {
 
+    const coverImagePath = req.files?.path
+
+    if (!coverImagePath) {
+        throw new ApiError(400, "Cover Image Path requiered")
+    }
+
+    const coverImage = uploadonCloudinary(coverImagePath)
+
+    if (!coverImage.url) {
+        throw new ApiError(404, "Error occured while uploading new cover image on cloudinary")
+    }
+
+    const user = User.findByIdAndUpdate(req.user?._id,
+        {
+            $set: {
+                coverImage: coverImage.url
+            }
+        },
+        {
+            new: true
+        }
+    )
+
+})
+
+//Fetch user profile : Auth required
+const fetchUserProfile = asyncHandler(async (req, res) =>{
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            req.user,
+            "User fetched successfully"
+        )
+    )
+
+})
+
+
+//Save Favorite Herb
+
+//Change/Remove favorite Herb
+
+//Fetch Favorite Herb
+
+
+
+
+
+//only for admin / ie. me :
+
+//get all user
+
+//delete user
 
 
 
@@ -296,5 +354,7 @@ export {
     logoutUser,
     changePassword,
     updateDetails,
+    updateCoverImage,
+    fetchUserProfile,
     
 }
