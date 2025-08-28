@@ -31,9 +31,9 @@ router.route("/login").post(loginUser);
 
 router.route("/logout").post(verifyJWT, logoutUser);
 
-router.route("/changePassword").post(changePassword);
+router.route("/changePassword").post(verifyJWT, changePassword);
 
-router.route("/updateDetails").post(updateDetails);
+router.route("/updateDetails").post(verifyJWT, updateDetails);
 
 router.route("/updateCoverImage").post(verifyJWT, updateCoverImage);
 
